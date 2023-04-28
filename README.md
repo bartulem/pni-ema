@@ -1,4 +1,4 @@
-# pni-ema v0.1.0
+# pni-ema v0.1.1
 
 Climate and Inclusion Ecological momentary assessment for  [Princeton Neuroscience Institute](https://pni.princeton.edu/) employees.
 

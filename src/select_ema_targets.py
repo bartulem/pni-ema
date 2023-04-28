@@ -39,6 +39,7 @@ class EMAOperator:
         """
 
         date_now = dt.now()
+        day_of_week = dt.today().weekday()
 
         for avoid_date in self.no_ema_dates:
             if ':' in avoid_date:
@@ -61,7 +62,10 @@ class EMAOperator:
                 if date_now.strftime('%m-%d') == avoid_date:
                     return False
         else:
-            return True
+            if day_of_week < 5:
+                return True
+            else:
+                return False
 
     def target_individuals(self, csv_delimiter=','):
         """
