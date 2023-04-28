@@ -12,9 +12,8 @@ class EMAOperator:
     no_ema_dates = ['12-24:01-05', '06-19', '07-04', '09-01', '11-22:12-01']
 
     # list of employee positions (abbreviated)
-    # FA - faculty, PD - postdoc, GS - graduate student, AD - administrative staff
-    # LM - lab manager, LT - lab technician, IT - IT staff
-    pni_positions = ['FA', 'PD', 'GS', 'AD', 'LM', 'LT', 'IT']
+    # FA - faculty, PD - postdoc, GS - graduate student, OE (other employees) - administrative staff / lab manage / lab technician / IT staff
+    pni_positions = ['FA', 'PD', 'GS', 'OE']
 
     def __init__(self, ema_directory=None):
         self.ema_directory = ema_directory
