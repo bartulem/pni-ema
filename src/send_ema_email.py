@@ -76,17 +76,19 @@ class Messenger:
             smtp.starttls()
             smtp.login(email_address, email_password)
             for position in individual_targets_dict.keys():
-                message.replace_header('From', email_address)
-                message.replace_header('To', individual_targets_dict[position])
-                message.replace_header('Subject', message['Subject'])
-                message.replace_header('Date', f'{dt.now()}')
+                if len(individual_targets_dict[position]) > 0:
+                    for individual_employee in individual_targets_dict[position]:
+                        message.replace_header('From', email_address)
+                        message.replace_header('To', individual_employee)
+                        message.replace_header('Subject', message['Subject'])
+                        message.replace_header('Date', f'{dt.now()}')
 
-                smtp.sendmail(email_address, individual_targets_dict[position], message.as_string())
+                        smtp.sendmail(email_address, individual_employee, message.as_string())
 
             smtp.quit()
 
 
 if __name__ == '__main__':
-    Messenger(eml_file= '.../PNI_Daily_Climate_Survey.eml',
+    Messenger(eml_file= '.../PNI_NanoPoll.eml',
               email_config_file='.../email_config.ini',
               ema_directory='.../ema_directory.csv').send_message()

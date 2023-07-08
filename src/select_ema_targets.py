@@ -4,6 +4,7 @@ Select daily EMA targets.
 """
 
 from datetime import datetime as dt
+import math
 import pandas as pd
 
 
@@ -13,7 +14,7 @@ class EMAOperator:
 
     # list of employee positions (abbreviated)
     # FA - faculty, PD - postdoc, GS - graduate student, OE (other employees) - administrative staff / lab manage / lab technician / IT staff
-    pni_positions = ['FA', 'PD', 'GS', 'OE']
+    pni_positions = ['Faculty', 'Postdoc', 'Graduate Student', 'OE']
 
     def __init__(self, ema_directory=None):
         self.ema_directory = ema_directory
@@ -66,12 +67,12 @@ class EMAOperator:
             else:
                 return False
 
-    def target_individuals(self, csv_delimiter=','):
+    def target_individuals(self, csv_delimiter=',', select_all=False):
         """
         Description
         ----------
         This method selects the individuals to receive the EMA survey,
-        by taking into consideration the date and the eligibility history.
+        by taking into consideration the date (sampling w/ replacement).
         ----------
 
         Parameters
@@ -79,6 +80,8 @@ class EMAOperator:
         Contains the following set of parameters
             csv_delimiter (str)
                 Delimiter in ema_directory.csv file; defaults to ",".
+            select_all (bool)
+                Select everyone as EMA targets for the day.
         ----------
 
         Returns
@@ -89,25 +92,20 @@ class EMAOperator:
         """
 
         if self.check_date_validity():
-            individual_targets_dict = {}
+            individual_targets_dict = {pos: [] for pos in self.pni_positions}
             csv_directory = pd.read_csv(filepath_or_buffer=self.ema_directory,
                                         sep=csv_delimiter)
 
-            # check eligibility and correct if necessary
             for position in self.pni_positions:
-                if not csv_directory[(csv_directory['POSITION'] == position) & (csv_directory['ELIGIBLE'] > 0)].shape[0] > 0:
-                    csv_directory.loc[(csv_directory['POSITION'] == position), 'ELIGIBLE'] = 1
+                if select_all:
+                    individual_targets_dict[position] = csv_directory[csv_directory['Title'] == position]['E-mail'].values.tolist()
+                else:
+                    # total number of individuals in given position
+                    individuals_in_pos_num = csv_directory[csv_directory['Title'] == position].shape[0]
+                    num_of_ind_to_sample = int(math.ceil(individuals_in_pos_num / 30))
 
-                # select random target from eligible individuals
-                individual_targets_dict[position] = csv_directory[(csv_directory['POSITION'] == position) & (csv_directory['ELIGIBLE'] > 0)].sample()['E-MAIL'].values[0]
-
-                # update eligibility
-                csv_directory.loc[(csv_directory['E-MAIL'] == individual_targets_dict[position]), 'ELIGIBLE'] = 0
-
-            # save modified CSV file
-            csv_directory.to_csv(path_or_buf=self.ema_directory,
-                                 sep=csv_delimiter,
-                                 index=False)
+                    # select random target(s) from available individuals
+                    individual_targets_dict[position] = csv_directory[csv_directory['Title'] == position].sample(n=num_of_ind_to_sample)['E-mail'].values.tolist()
 
             return individual_targets_dict
 
