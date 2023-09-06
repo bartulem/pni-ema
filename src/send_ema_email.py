@@ -7,6 +7,7 @@ import configparser
 from datetime import datetime as dt
 import email.message
 import smtplib
+from time import sleep
 from select_ema_targets import EMAOperator
 
 
@@ -84,11 +85,12 @@ class Messenger:
                         message.replace_header('Date', f'{dt.now()}')
 
                         smtp.sendmail(email_address, individual_employee, message.as_string())
+                        sleep(10)
 
             smtp.quit()
 
 
 if __name__ == '__main__':
-    Messenger(eml_file= '.../PNI_NanoPoll.eml',
+    Messenger(eml_file='.../PNI_NanoPoll.eml',
               email_config_file='.../email_config.ini',
               ema_directory='.../ema_directory.csv').send_message()

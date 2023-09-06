@@ -23,7 +23,7 @@ class EMAOperator:
         """
         Description
         ----------
-        This method check whether the current date falls within
+        This method checks whether the current date falls within
         a range of holiday days or on a holiday.
         ----------
 
