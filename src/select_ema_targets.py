@@ -94,7 +94,8 @@ class EMAOperator:
         if self.check_date_validity():
             individual_targets_dict = {pos: [] for pos in self.pni_positions}
             csv_directory = pd.read_csv(filepath_or_buffer=self.ema_directory,
-                                        sep=csv_delimiter)
+                                        sep=csv_delimiter,
+                                        encoding='ISO-8859-1')
 
             for position in self.pni_positions:
                 if select_all:
